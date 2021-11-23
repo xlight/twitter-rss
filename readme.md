@@ -1,6 +1,8 @@
 # Twitter to RSS
 Quick and dirty PHP script that turns a given Twitter feed into a RSS feed using Twitter's API v2 (the free version!)
 
+Does some basic link expansion and handling, as well as media preview images for pictures and videos.
+
 Call it from a browser like: http://yourserver/yourpath?[numerictwitterid]
 
 The Twitter ID must be numeric. You can look up the numeric ID for a Twitter username at sites like https://tweeterid.com/
