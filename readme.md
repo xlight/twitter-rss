@@ -12,7 +12,7 @@ The Twitter ID must be numeric. You can look up the numeric ID for a Twitter use
 
 ## Configuration
 
-Copy the `config-example.php` to 'config.php`
+Copy the `config-example.php` to `config.php`
 
 Update the `bearer_token` value with what was created in your [Twitter developer portal](https://developer.twitter.com/en/portal/dashboard)
 
