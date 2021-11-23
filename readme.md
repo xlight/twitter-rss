@@ -5,9 +5,12 @@ Call it from a browser like: http://yourserver/yourpath?[numerictwitterid]
 
 The Twitter ID must be numeric. You can look up the numeric ID for a Twitter username at sites like https://tweeterid.com/
 
-Requires PHP CURL
+## Requirements
+- PHP
+- PHP cURL
+- A Twitter Developer Account
 
-# Configuration
+## Configuration
 
 Copy the `config-example.php` to 'config.php`
 
