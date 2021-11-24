@@ -146,6 +146,7 @@ function output_rss_post($title, $link, $description, $mediaContent, $pubDate) {
 	if (isset($mediaContent) && $mediaContent != "") {
 		echo "    " . $mediaContent . "\n";
 	}
+	echo "    <pubDate>$pubDate</pubDate>\n";
 	echo "    <guid isPermaLink=\"true\">$link</guid>\n";
 	echo "  </item>\n";
 }
