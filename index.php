@@ -40,7 +40,7 @@ if ($_SERVER['QUERY_STRING'] != "" && is_numeric($_SERVER['QUERY_STRING'])) {
 				}
 			}
 		}
-		output_rss_post($title, $link, $description, $mediaContent, $pubDate);
+		output_rss_post($author, $title, $link, $description, $mediaContent, $pubDate);
 	}
 	output_rss_footer();
 } else {
