@@ -6,20 +6,24 @@ if ($_SERVER['QUERY_STRING'] != "" && is_numeric($_SERVER['QUERY_STRING'])) {
 	$uid = $_SERVER['QUERY_STRING'];
 	$userdata = get_twitter_userdata($uid, $bearer_token);
 	$user_o = json_decode($userdata);
+
 	$tweetURL = "https://twitter.com/" . $user_o->data->username;
 	output_rss_header($user_o->data->name . " Tweets", $tweetURL, "@" . $user_o->data->username, $user_o->data->profile_image_url);
 	$tweetURL = $tweetURL . "/status/";
+	
 	$tweetdata = get_twitter_tweetsforuser($uid, $bearer_token);
 	$tweets_o = json_decode($tweetdata);
 	$tweets = $tweets_o->data;
 	if (isset($tweets_o->includes)) {
 		$includes = $tweets_o->includes;
 	}
+	
 	foreach ($tweets as $tweet) {
 		$title = remove_urls($tweet->text);
 		$description = parse_urls($tweet->text, $tweet->id);
 		$link = $tweetURL . $tweet->id;
 		$pubDate = $tweet->created_at;
+		$author = $user_o->data->username;
 		$mediaContent = "";
 		if (isset($includes) && isset($tweet->attachments) && isset($tweet->attachments->media_keys)) {
 			foreach ($tweet->attachments->media_keys as $media_key) {
@@ -27,11 +31,9 @@ if ($_SERVER['QUERY_STRING'] != "" && is_numeric($_SERVER['QUERY_STRING'])) {
 					if ($media_key == $media->media_key) {
 						if (isset($media->preview_image_url)) {
 							$mediaContent = make_rss_media($media->preview_image_url, $mediaContent);
-//							$mediaContent = $description . "<img src='" . $media->preview_image_url . "'>";
 						}
 						if (isset($media->url)) {
 							$mediaContent = make_rss_media($media->url, $mediaContent);
-//							$description = $description . "<img src='" . $media->url . "'>";
 						}
 
 					}
@@ -138,8 +140,9 @@ function make_rss_media($url, $mediaContent) {
 	return $mediaContent . "<media:content url=\"" . $url . "\"/>\n";
 }
 
-function output_rss_post($title, $link, $description, $mediaContent, $pubDate) {
+function output_rss_post($author, $title, $link, $description, $mediaContent, $pubDate) {
 	echo "  <item>\n";
+	echo "    <author>$author</author>\n";
 	echo "    <title>$title</title>\n";
 	echo "    <link>$link</link>\n";
  	echo "    <description><![CDATA[" . $description . "]]></description>\n";
