@@ -45,10 +45,6 @@ if ($_SERVER['QUERY_STRING'] != "" && is_numeric($_SERVER['QUERY_STRING'])) {
 	echo "No numeric Twitter ID specified. You can get the numeric ID from a username with sites like https://tweeterid.com/";
 }
 
-function make_rss_media($url, $mediaContent) {
-	return $mediaContent . "<media:content url=\"" . $url . "\">\n";
-}
-
 //Twitter API v2 calls
 function get_twitter_userdata($uid, $bearer_token) {
 	$url = "https://api.twitter.com/2/users/" . $uid . "?user.fields=profile_image_url";
@@ -129,13 +125,17 @@ function output_rss_header($title, $link, $description, $image) {
 	header('Content-Type: text/xml');
 	$currPath = "http://" . $_SERVER[HTTP_HOST] . $_SERVER[REQUEST_URI];
 	echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
-	echo "<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n";
+	echo "<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\" xmlns:media=\"http://search.yahoo.com/mrss/\">\n";
 	echo "<channel>\n";
 	echo "  <title>$title</title>\n";
 	echo "  <link>$link</link>\n";
 	echo "  <description>$description</description>\n";
 	echo "  <atom:link href=\"" . $currPath . "\" rel=\"self\" type=\"application/rss+xml\" />\n";
 	echo "  <image><url>$image</url><title>$title</title><link>$link</link><width>48</width><height>48</height></image>\n";
+}
+
+function make_rss_media($url, $mediaContent) {
+	return $mediaContent . "<media:content url=\"" . $url . "\">\n";
 }
 
 function output_rss_post($title, $link, $description, $mediaContent, $pubDate) {
