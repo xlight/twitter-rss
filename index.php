@@ -38,7 +38,7 @@ if ($_SERVER['QUERY_STRING'] != "" && is_numeric($_SERVER['QUERY_STRING'])) {
 				}
 			}
 		}
-		output_rss_post($title, $link, $description . $mediaContent, $pubDate);
+		output_rss_post($title, $link, $description, $mediaContent, $pubDate);
 	}
 	output_rss_footer();
 } else {
@@ -138,11 +138,14 @@ function output_rss_header($title, $link, $description, $image) {
 	echo "  <image><url>$image</url><title>$title</title><link>$link</link><width>48</width><height>48</height></image>\n";
 }
 
-function output_rss_post($title, $link, $description, $pubDate) {
+function output_rss_post($title, $link, $description, $mediaContent, $pubDate) {
 	echo "  <item>\n";
 	echo "    <title>$title</title>\n";
 	echo "    <link>$link</link>\n";
  	echo "    <description><![CDATA[" . $description . "]]></description>\n";
+	if (isset($mediaContent) && $mediaContent != "") {
+		echo "    " . $mediaContent . "\n";
+	}
 	echo "    <guid isPermaLink=\"true\">$link</guid>\n";
 	echo "  </item>\n";
 }
