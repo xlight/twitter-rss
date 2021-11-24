@@ -20,27 +20,33 @@ if ($_SERVER['QUERY_STRING'] != "" && is_numeric($_SERVER['QUERY_STRING'])) {
 		$description = parse_urls($tweet->text, $tweet->id);
 		$link = $tweetURL . $tweet->id;
 		$pubDate = $tweet->created_at;
-
+		$mediaContent = "";
 		if (isset($includes) && isset($tweet->attachments) && isset($tweet->attachments->media_keys)) {
 			foreach ($tweet->attachments->media_keys as $media_key) {
 				foreach ($includes->media as $media) {
 					if ($media_key == $media->media_key) {
 						if (isset($media->preview_image_url)) {
-							$description = $description . "<img src='" . $media->preview_image_url . "'>";
+							$mediaContent = make_rss_media($media->preview_image_url, $mediaContent);
+//							$mediaContent = $description . "<img src='" . $media->preview_image_url . "'>";
 						}
 						if (isset($media->url)) {
-							$description = $description . "<img src='" . $media->url . "'>";
+							$mediaContent = make_rss_media($media->url, $mediaContent);
+//							$description = $description . "<img src='" . $media->url . "'>";
 						}
 
 					}
 				}
 			}
 		}
-		output_rss_post($title, $link, $description, $pubDate);
+		output_rss_post($title, $link, $description . $mediaContent, $pubDate);
 	}
 	output_rss_footer();
 } else {
 	echo "No numeric Twitter ID specified. You can get the numeric ID from a username with sites like https://tweeterid.com/";
+}
+
+function make_rss_media($url, $mediaContent) {
+	return $mediaContent . "<media:content url=/"" . $url . "/">\n";
 }
 
 //Twitter API v2 calls
