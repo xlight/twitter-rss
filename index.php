@@ -135,7 +135,7 @@ function output_rss_header($title, $link, $description, $image) {
 }
 
 function make_rss_media($url, $mediaContent) {
-	return $mediaContent . "<media:content url=\"" . $url . "\">\n";
+	return $mediaContent . "<media:content url=\"" . $url . "\"/>\n";
 }
 
 function output_rss_post($title, $link, $description, $mediaContent, $pubDate) {
