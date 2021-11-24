@@ -46,7 +46,7 @@ if ($_SERVER['QUERY_STRING'] != "" && is_numeric($_SERVER['QUERY_STRING'])) {
 }
 
 function make_rss_media($url, $mediaContent) {
-	return $mediaContent . "<media:content url=/"" . $url . "/">\n";
+	return $mediaContent . "<media:content url=\"" . $url . "\">\n";
 }
 
 //Twitter API v2 calls
