@@ -1,23 +1,26 @@
 <?php
 $config = include('config.php');
 $bearer_token = $config['bearer_token'];
+$request_twitter_id = false;
 
 if (!isset($config) || !isset($config['bearer_token']) || $config['bearer_token'] == "" || $config['bearer_token'] == "<YOURBEARERTOKENFROMTWITTER>") {
 	die ("No valid Twitter API v2 bearer token specified in config");
 }
 
 //Figure out who the user is and what they want
-//TODO: test more cases
 if ($_SERVER['QUERY_STRING'] != "") {
 	$clientid = "anonymous";
+	$twitterid = $_SERVER['QUERY_STRING'];
 	if (isset($_GET['twitterid'])) {
 		$twitterid = $_GET['twitterid'];
-		if (isset($_GET['clientid'])) {
-			$clientid = $_GET['clientid'];
-		}
-	} else {
-		$twitterid = $_SERVER['QUERY_STRING'];
 	}
+	if (isset($_GET['clientid'])) {
+		$clientid = $_GET['clientid'];
+	}
+	if (isset($_POST['clientid'])) {
+		$clientid = $_POST['clientid'];
+	}
+	$request_twitter_id = $twitterid;
 	if (isset($config['require_encoding']) && $config['require_encoding'] == true) {
 		$twitterid = base64_decode($twitterid);
 		if ($clientid != "anonymous") {
@@ -26,7 +29,7 @@ if ($_SERVER['QUERY_STRING'] != "") {
 	}
 	if (!is_numeric($twitterid)) {
 		unset($twitterid);
-		die ("No valid Twitter ID specified. Valid Twitter IDs are numeric, and may need to be encoded. You can get the numeric ID from a username with sites like https://tweeterid.com/");
+		die ("No valid Twitter ID specified. Valid Twitter IDs are numeric, and may need to be encoded. You can get the numeric ID from a username with sites like https://tweeterid.com/ or https://codeofaninja.com/tools/find-twitter-id/");
 	}
 }
 
@@ -51,16 +54,13 @@ if (!$allowed) {
 	die ("Specified user does not have access to requested Twitter ID.");
 }
 
-echo "getting tweets from " . $twitterid . " for user " . $clientid . " because allowed =" . $allowed;
-die();
-
 //Actually get twitter feed and return as RSS XML
 //TODO: cache
 $userdata = get_twitter_userdata($twitterid, $bearer_token);
 $user_o = json_decode($userdata);
 
 $tweetURL = "https://twitter.com/" . $user_o->data->username;
-output_rss_header($user_o->data->name . " Tweets", $tweetURL, "@" . $user_o->data->username, $user_o->data->profile_image_url);
+output_rss_header($request_twitter_id, $user_o->data->name . " Tweets", $tweetURL, "@" . $user_o->data->username, $user_o->data->profile_image_url);
 $tweetURL = $tweetURL . "/status/";
 
 $tweetdata = get_twitter_tweetsforuser($twitterid, $bearer_token);
@@ -95,7 +95,6 @@ foreach ($tweets as $tweet) {
 	output_rss_post($author, $title, $link, $description, $mediaContent, $pubDate);
 }
 output_rss_footer();
-
 
 //Twitter API v2 calls
 function get_twitter_userdata($twitterid, $bearer_token) {
@@ -173,9 +172,12 @@ function remove_urls($text) {
 }
 
 //RSS Stuff
-function output_rss_header($title, $link, $description, $image) {
+function output_rss_header($twitterid, $title, $link, $description, $image) {
 	header('Content-Type: text/xml');
 	$currPath = "http://" . $_SERVER[HTTP_HOST] . $_SERVER[REQUEST_URI];
+	$currPath = explode("?", $currPath);
+	$currPath = $currPath[0] . "?twitterid=" . $twitterid;
+	
 	echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 	echo "<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\" xmlns:media=\"http://search.yahoo.com/mrss/\">\n";
 	echo "<channel>\n";
