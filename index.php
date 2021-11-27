@@ -2,8 +2,19 @@
 $config = include('config.php');
 $bearer_token = $config['bearer_token'];
 
-if ($_SERVER['QUERY_STRING'] != "" && is_numeric($_SERVER['QUERY_STRING'])) {
+if (!isset($config) || !isset($config['bearer_token']) || $config['bearer_token'] == "" || $config['bearer_token'] == "<YOURBEARERTOKENFROMTWITTER>") {
+	die ("No valid Twitter API v2 bearer token specified in config");
+}
+if ($_SERVER['QUERY_STRING'] != "") {
 	$uid = $_SERVER['QUERY_STRING'];
+	if (isset($config['require_encoding']) && $config['require_encoding'] == true)
+		$uid = base64_decode($uid);
+	if (!is_numeric($uid)) {
+		unset($uid);
+	}
+}
+
+if (isset($uid)) {
 	$userdata = get_twitter_userdata($uid, $bearer_token);
 	$user_o = json_decode($userdata);
 
@@ -44,7 +55,7 @@ if ($_SERVER['QUERY_STRING'] != "" && is_numeric($_SERVER['QUERY_STRING'])) {
 	}
 	output_rss_footer();
 } else {
-	echo "No numeric Twitter ID specified. You can get the numeric ID from a username with sites like https://tweeterid.com/";
+	die ("No valid Twitter ID specified. Valid Twitter IDs are numeric, and may be encoded. You can get the numeric ID from a username with sites like https://tweeterid.com/");
 }
 
 //Twitter API v2 calls
